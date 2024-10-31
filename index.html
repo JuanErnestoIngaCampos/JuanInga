@@ -1,1 +1,161 @@
-Hola
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Denuncias</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="d-flex">
+        <nav class="bg-dark text-white p-3 vh-100 sidebar">
+            <h4>Fiscalia USS</h4>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="#">Escritorio</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="#">Denuncias</a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="#">Acerca de</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Contenido principal -->
+        <div class="container-fluid p-4 main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Denuncias</h2>
+                <div>
+                    <input type="text" id="searchInput" placeholder="Buscar denuncias..." class="form-control" onkeyup="buscarDenuncias()">
+                    <button class="btn btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#denunciaModal" onclick="abrirModalCrear()">Nuevo</button>
+                </div>
+            </div>
+
+            <!-- Tabla de denuncias -->
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Opciones</th>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Ubicación</th>
+                        <th>Ciudadano</th>
+                        <th>Teléfono</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="listaDenuncias">
+                    <!-- Las denuncias se cargarán aquí desde script.js -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Crear/Editar Denuncia -->
+    <div class="modal fade" id="denunciaModal" tabindex="-1" aria-labelledby="denunciaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="denunciaModalLabel">Nuevo Reporte de Denuncia</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="denunciaForm">
+                        <input type="hidden" id="id" name="id">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="titulo" class="form-label">Título</label>
+                                <input type="text" class="form-control" id="titulo" name="titulo" placeholder="Ingrese título" required>
+                            </div>
+                            <div class="col">
+                                <label for="ciudadano" class="form-label">Ciudadano</label>
+                                <input type="text" class="form-control" id="ciudadano" name="ciudadano" placeholder="Ingrese nombre del ciudadano" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Ingrese descripción" required></textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="ubicacion" class="form-label">Ubicación</label>
+                                <input type="text" class="form-control" id="ubicacion" name="ubicacion" placeholder="Ingrese ubicación" required>
+                            </div>
+                            <div class="col">
+                                <label for="telefono_ciudadano" class="form-label">Teléfono</label>
+                                <input type="text" class="form-control" id="telefono_ciudadano" name="telefono_ciudadano" placeholder="Ingrese teléfono">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label for="fecha" class="form-label">Fecha</label>
+                                <input type="date" class="form-control" id="fecha" name="fecha" required>
+                            </div>
+                            <div class="col">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="pendiente">Pendiente</option>
+                                    <option value="en proceso">En proceso</option>
+                                    <option value="resuelto">Resuelto</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="guardarDenuncia">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Confirmación de Eliminación -->
+    <div class="modal fade" id="confirmarEliminacionModal" tabindex="-1" aria-labelledby="confirmarEliminacionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="confirmarEliminacionModalLabel">Eliminar registro</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Deseas eliminar el registro?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-danger" id="btnEliminar">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para mensajes de éxito -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="toastSuccess" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <strong class="me-auto">Notificación</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body" id="toastMessage">
+                Denuncia creada exitosamente.
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de página -->
+    <footer class="text-center mt-4">
+        <p>Elaborado por Juan Ernesto Inga Campos</p>
+    </footer>
+
+    <!-- Enlaza el archivo de JavaScript -->
+    <script src="js/script.js"></script>
+    <!-- Bootstrap JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
